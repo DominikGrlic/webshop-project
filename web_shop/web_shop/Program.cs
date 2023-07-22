@@ -17,6 +17,8 @@ namespace web_shop
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            // kreiranje servisa za koristenje razor page opcija
+            builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
@@ -39,6 +41,8 @@ namespace web_shop
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapRazorPages();
 
             app.Run();
         }
