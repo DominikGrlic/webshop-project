@@ -9,11 +9,13 @@ namespace web_shop
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var connectionString = builder.Configuration.GetConnectionString("AppDbContexConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContexConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.");
 
+            // servis za kreiranje resursa objekta klase konteksta
             builder.Services.AddDbContext<AppDbContex>(options => options.UseSqlServer(connectionString));
 
-            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContex>();
+            // servis koji kaze kako je klasa AppUser glavna za identifikaciju korisnika 
+            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<AppDbContex>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
