@@ -61,5 +61,77 @@ public class AppDbContex : IdentityDbContext<AppUser>
         };
 
         builder.Entity<ProductCategory>().HasData(mainProductCategories);
+
+        // postavke za seeding uloga (roles) 
+        // tablica AspNetRoles - Identity klasa IdentityRole
+
+        string adminRoleId = "cd0fc0a4-46a0-406d-b164-216473011946";
+        string adminRoleTitle = "Admin";
+        string customerRoleId = "7c2cc1ae-5d07-4adb-ba15-719725a5ca16";
+        string customerRoleTitle = "Customer";
+
+        // KREIRANJE LISTE "ULOGA" (IDENTITY ROLE) 
+
+        //List<IdentityRole> identityRoles = new List<IdentityRole>()
+        //{
+        //    new IdentityRole() {Id=adminRoleId, Name=adminRoleTitle, NormalizedName=adminRoleTitle.ToUpper() },
+        //    new IdentityRole() {Id=customerRoleId, Name=customerRoleTitle, NormalizedName=customerRoleTitle.ToUpper()}
+        //};
+
+        // koristimo metodu izravnog kreiranja radi lakseg snalazenja u kodu
+        builder.Entity<IdentityRole>().HasData(
+            new IdentityRole()
+            {
+                Id = adminRoleId,
+                Name = adminRoleTitle,
+                NormalizedName = adminRoleTitle.ToUpper(),
+            },
+            new IdentityRole()
+            {
+                Id = customerRoleId,
+                Name = customerRoleTitle,
+                NormalizedName= customerRoleTitle.ToUpper(),
+            }
+            );
+
+        // tablica AspNetUsers - Identity klasa AppUser (IdentityUser)
+
+        string adminId = "2846d2b2-81d9-4918-839d-b70acbf93ef2";
+        string admin = "admin@admin.com"; // i korisnicko ime i email vrijednost
+        string adminFirstName = "Admin";
+        string adminLastName = "Adminovski";
+        string adminPassword = "asdasd";
+        string adminAddress = "Duga Uvala 302";
+
+        // hash lozinke
+        var hasher = new PasswordHasher<AppUser>();
+
+        builder.Entity<AppUser>().HasData(
+            new AppUser()
+            {
+                Id= adminId,
+                UserName = admin,
+                NormalizedUserName = admin.ToUpper(),
+                Email = admin,
+                NormalizedEmail = admin.ToUpper(),
+                FirstName = adminFirstName,
+                LastName = adminLastName,
+                Address = adminAddress,
+                PasswordHash = hasher.HashPassword(null, adminPassword)
+            }
+        );
+
+        // tablica AspNetUserRoles - Identity klasa IdentityUserRole<string> (veza izmedu "users" i "roles")
+
+        builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>()
+            {
+                UserId = adminId,
+                RoleId = adminRoleId,
+            }
+        );
+
+
+
     }
 }

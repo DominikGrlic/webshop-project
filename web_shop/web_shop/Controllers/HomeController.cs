@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using web_shop.Models;
 
 namespace web_shop.Controllers
 {
+    [Authorize] // primjenjuje se na cijeli kontroler ili na akcije unutar kontrolera
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
