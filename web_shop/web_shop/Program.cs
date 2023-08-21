@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using web_shop.Areas.Identity.Data;
 using web_shop.Data;
 namespace web_shop
@@ -38,6 +39,19 @@ namespace web_shop
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // postavke za rukovanje decimalnim vrijednostima
+            var ci = new CultureInfo("de-De");
+            ci.NumberFormat.NumberDecimalSeparator = ".";
+            ci.NumberFormat.CurrencyDecimalSeparator = ".";
+
+            app.UseRequestLocalization(
+                new RequestLocalizationOptions
+                {
+                    DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(ci),
+                    SupportedCultures = new List<CultureInfo> { ci },
+                    SupportedUICultures = new List<CultureInfo> { ci }
+                });
 
             app.UseRouting();
             app.UseAuthentication();;

@@ -1,0 +1,17 @@
+﻿@using web_shop.Data;
+
+@inject AppDbContex _dbContext;
+
+<div class="form-group">
+    <label class="control-label">
+        Select product categories
+    </label>
+    <select class="form-control" name="categoryIds[]" multiple>
+        @foreach(var categoryItem in _dbContext.Categories.ToList())
+        {
+            <option value="@categoryItem.Id">
+                @categoryItem.Title
+            </option>
+        }
+    </select>
+</div>
