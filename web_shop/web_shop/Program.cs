@@ -22,6 +22,18 @@ namespace web_shop
                 ).AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContex>();
 
+            builder.Services.Configure<IdentityOptions>(
+                options =>
+                {
+                    // osnovno postavke za lozinku (samo za vjezbu)
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireUppercase =  false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                }
+
+                );
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             // kreiranje servisa za koristenje razor page opcija

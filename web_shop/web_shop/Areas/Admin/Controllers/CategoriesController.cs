@@ -11,7 +11,7 @@ using web_shop.Models;
 
 namespace web_shop.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     [Area("Admin")]
     public class CategoriesController : Controller
     {

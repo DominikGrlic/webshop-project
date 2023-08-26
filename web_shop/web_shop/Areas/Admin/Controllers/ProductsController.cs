@@ -11,7 +11,7 @@ using web_shop.Models;
 
 namespace web_shop.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     [Area("Admin")]
     public class ProductsController : Controller
     {
@@ -51,6 +51,7 @@ namespace web_shop.Areas.Admin.Controllers
         // GET: Admin/Products/Create
         public IActionResult Create()
         {
+            ViewBag.ErrorMsg = TempData["ErrorMsg"] as string ?? "";
             return View();
         }
 
@@ -61,12 +62,82 @@ namespace web_shop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             [Bind("Id,Sku,Title,Description,InStock,Price,Image")] Product product,
-            int[] categoryIds)
+            int[] categoryIds,
+            IFormFile Image
+            )
         {
+            // 1. korak --->provjeri ako je "categoryIds" prazan ili nula
+            if(categoryIds.Length == 0 || categoryIds == null)
+            {
+                // izbaci poruku kako se kategorije moraju odabrati
+                // tempData ---> kolekcija koja kreira kratkorocne poruke u sesiji izmedu dvije akcije
+                TempData["ErrorMsg"] = "Odaberite minimalno jednu kategorij!";
+                return RedirectToAction(nameof(Create));
+            }    
+
+            // 2. korak ---> pohrani proizvod u tablicu i nakon toga povezi proizvod s odabranim kategorijama
             if (ModelState.IsValid)
             {
+                // 2.1 korak ---> pokusaj pohraniti sliku na disk i spremni naziv slike u svojstvo "product.Image"
+                try
+                {
+                    // primjer 1
+                    var imageName = Image.FileName.ToLower();
+
+                    // primjer 2
+                    // bez razmaka i doljnjih crta
+                    //var imageName = Image.FileName.ToLower().Replace(" ", "-").Replace("_", "-");
+
+                    // primjer 3
+                    //var getFileExtension = Path.GetExtension(Image.FileName);
+                    //var imageName = DateTime.Now.ToString("yyyy-mm-dd-hh-mm-ss") + getFileExtension;
+
+
+
+                    // Odabir putanje gdje ce slika biti pohranjena
+                    // Rezultat: ~/wwwroot/images/products/naziv-slike.jpg
+                    var saveImagePath = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot/images/products",
+                            imageName
+                        );
+
+                    // kreiraj direktorije i poddirektorije unutar zadane putanje (wwwroot/images/products)
+                    Directory.CreateDirectory(Path.GetDirectoryName(saveImagePath));
+
+                    // ovdje se datoteka fizicki kopira unutar zadane putanje (wwwroot/images/products) direktorija projekta
+                    using (var stream = new FileStream(saveImagePath, FileMode.Create))
+                    {
+                        Image.CopyTo(stream);
+                    }
+
+                    // u stupac tablice pohranjujemo samo naziv datoteke
+                    product.Image = imageName;
+                  
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMsg"] = ex.Message;
+                    return RedirectToAction(nameof(Create));
+                }
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+
+                // nakon pohrane zapisa u tablicu EF CORE ce u objekt popuniti vrijednost za svojstvo product.Id
+
+                // 2.2 korak ---> povezi product.Id sa stavkama niza categoryIds i pohrani sve u tablicu ProductCategories
+                foreach(var categoryId in categoryIds)
+                {
+                    ProductCategory productCategory = new ProductCategory();
+                    productCategory.CategoryId = categoryId;
+                    productCategory.ProductId = product.Id;
+
+                    _context.ProductCategories.Add(productCategory);
+                }
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
