@@ -1,8 +1,57 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<Product>
+
+
+@{
+    ViewData["Title"] = "Welcome to my home page!";
+    ViewData["Description"] = "This is asp.net development project exam!";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1>@ViewData["Title"]</h1>
+    <p>@ViewData["Description"]</p>
+</div>
+
+<hr />
+
+
+<form method="get" asp-area="" asp-controller="Home" asp-action="Index" class="row mb-5">
+    <div class="col-7">
+        <input type="text" placeholder="Search for an item" class="form-control" name="homeSearch" />
+    </div>
+    <div class="col-4">
+        <select class="form-select" name="orderBy">
+            <option value="0">Default</option>
+            <option value="1">Title A - Z</option>
+            <option value="2">Title Z - A</option>
+            <option value="3">Price 12345</option>
+            <option value="4">Price 54321</option>
+        </select>
+    </div>
+    <div class="col-1">
+        <input type="submit" class="btn btn-success" value="Search..." />
+    </div>
+</form>
+
+
+
+
+
+
+<div class="row">
+
+    @foreach(var item in Model)
+    {
+        <div class="card col-4 mb-3">
+            @{
+                string setImage = !String.IsNullOrEmpty(item.Image) ? "~/images/products/" + item.Image : "/images/NoImage.png"; 
+            }
+            <img src="@Url.Content(setImage)" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@item.Title</h5>
+                <p class="card-text">@item.Description</p>
+                <p class="card-text">@item.Price.ToString("C2")</p>
+            </div>
+        </div>
+    }
+
 </div>
