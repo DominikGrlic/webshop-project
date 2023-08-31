@@ -156,6 +156,12 @@ namespace web_shop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            // dohvati ID-eve kategorija s kojima je proizvod povezan u tablici ProductCategories
+            ViewBag.ProdCategories = _context.ProductCategories.Where(p => p.ProductId == product.Id).Select(c => c.CategoryId).ToList();
+
+            ViewBag.ErrorMsg = TempData["ErrorMsg"] as string ?? "";
+
             return View(product);
         }
 
@@ -164,19 +170,75 @@ namespace web_shop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Sku,Title,Description,InStock,Price,Image")] Product product)
+        public async Task<IActionResult> Edit(
+            int id, 
+            [Bind("Id,Sku,Title,Description,InStock,Price,Image")] Product product, 
+            IFormFile? newImage,
+            int[] categoryIds
+            )
         {
             if (id != product.Id)
             {
                 return NotFound();
+            }
+            
+            // provjeri ako je odabrana barem jedna kategorija
+            if(categoryIds.Length == 0)
+            {
+                TempData["ErrorMsg"] = "Molim odaberite barem jednu kategoriju!";
+                return RedirectToAction(nameof(Edit), new { id = id });
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+
+                    // provjeri postoji li vrijednost parametra newImage (netko je dodao sliku)
+                    if(newImage != null) 
+                    {
+                        var newImageName = DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss") + "_" + newImage.FileName.ToLower().Replace(" ", "_");
+
+                        // Odabir putanje gdje ce slika biti pohranjena
+                        // Rezultat: ~/wwwroot/images/products/naziv-slike.jpg
+                        var saveImagePath = Path.Combine(
+                                Directory.GetCurrentDirectory(),
+                                "wwwroot/images/products",
+                                newImageName
+                            );
+
+                        // kreiraj direktorije i poddirektorije unutar zadane putanje (wwwroot/images/products)
+                        Directory.CreateDirectory(Path.GetDirectoryName(saveImagePath));
+
+                        // ovdje se datoteka fizicki kopira unutar zadane putanje (wwwroot/images/products) direktorija projekta
+                        using (var stream = new FileStream(saveImagePath, FileMode.Create))
+                        {
+                            newImage.CopyTo(stream);
+                        }
+
+                        // u stupac tablice pohranjujemo samo naziv datoteke
+                        product.Image = newImageName;
+                    }
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
+
+                    // azuriramo kategorije proizvoda u tablici ProductCategories
+
+                    // 1. izbrisi sve postojece konekcije izmedu kategorije i proizvoda (ako postoje)
+                    _context.ProductCategories.RemoveRange(_context.ProductCategories.Where(p => p.ProductId == id));
+                    _context.SaveChanges();
+
+                    // azuriraj nove podatke s vezom izmedu proizvoda i kategorije u tablici ProductCategories
+                    foreach(var category in categoryIds)
+                    {
+                        ProductCategory productCategory = new ProductCategory();
+                        productCategory.ProductId = id;
+                        productCategory.CategoryId = category;
+                        _context.Add(productCategory);
+                    }
+
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

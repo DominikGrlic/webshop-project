@@ -9,9 +9,12 @@
     <select class="form-control" name="categoryIds[]" multiple>
         @foreach(var categoryItem in _dbContext.Categories.ToList())
         {
-            <option value="@categoryItem.Id">
+            <!option value="@categoryItem.Id" @if(ViewBag.ProdCategories != null)
+            {
+                @(ViewBag.ProdCategories.Contains(categoryItem.Id) ? "Selected" : "")
+            }>
                 @categoryItem.Title
-            </option>
+            </!option>
         }
     </select>
 </div>
