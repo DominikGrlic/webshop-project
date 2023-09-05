@@ -36,8 +36,13 @@ namespace web_shop
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
             // kreiranje servisa za koristenje razor page opcija
             builder.Services.AddRazorPages();
+
+            // Kreiraj servise za sesiju 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
 
             var app = builder.Build();
 
@@ -69,6 +74,9 @@ namespace web_shop
             app.UseAuthentication();;
 
             app.UseAuthorization();
+
+            // Sesije
+            app.UseSession();
 
             app.MapAreaControllerRoute(
                 name: "Admin",

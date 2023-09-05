@@ -13,12 +13,22 @@
 
 <hr />
 
+<p>@Context.Session.GetString("sessionString")</p>
 
 <form method="get" asp-area="" asp-controller="Home" asp-action="Index" class="row mb-5">
-    <div class="col-7">
+    <div class="col-6">
         <input type="text" placeholder="Search for an item" class="form-control" name="homeSearch" />
     </div>
-    <div class="col-4">
+    <div class="col-3">
+        <select class="form-select" id="floatingSelect" name="categoryId">
+            <option selected value="0">All categories</option>
+            @foreach (var category in ViewBag.CategoriesVB)
+            {
+                <option value="@category.Id">@category.Title</option>
+            }
+        </select>
+    </div>
+    <div class="col-2">
         <select class="form-select" name="orderBy">
             <option value="0">Default</option>
             <option value="1">Title A - Z</option>
@@ -28,7 +38,7 @@
         </select>
     </div>
     <div class="col-1">
-        <input type="submit" class="btn btn-success" value="Search..." />
+        <input type="submit" class="btn btn-success" value="Search" />
     </div>
 </form>
 

@@ -283,9 +283,27 @@ namespace web_shop.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContex.Products'  is null.");
             }
+
+            // EF -> automatski podesava vanjski kljuc na onDelete: Cascade (postoji i onDelete: Restrict)
+            // EF brise sve zapise gdje je ID proizvoda vanjski kljuc i brise sam zapis proizvoda
             var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
+                if(!string.IsNullOrWhiteSpace(product.Image))
+                {
+                    // putanja na disku servera gdje se slika treba nalaziti
+                    var deleteImageFromPath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images/products",
+                        product.Image
+                        );
+
+                    if(System.IO.File.Exists(deleteImageFromPath))
+                    {
+                        System.IO.File.Delete(deleteImageFromPath);
+                    }
+                }
+
                 _context.Products.Remove(product);
             }
             

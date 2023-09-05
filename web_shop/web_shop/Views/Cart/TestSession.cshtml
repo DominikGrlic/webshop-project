@@ -1,0 +1,20 @@
+﻿@* @using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor accessor *@
+
+<h1>Ovdje samo testiramo sesije</h1>
+<hr />
+
+<p>@ViewBag.ReadSessionString</p>
+
+<hr />
+
+<p>@Context.Session.GetString("sessionString")</p>
+
+@if(!string.IsNullOrEmpty(Context.Session.GetString("privacyString")))
+{
+    <p>Nepoznati korisnik je posjetio "Privacy" pogled</p>
+}
+
+
+
+@* <p>@accessor.HttpContext.Session.GetString("sessionString")</p> *@

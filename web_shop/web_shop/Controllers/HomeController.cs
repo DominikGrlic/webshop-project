@@ -18,9 +18,14 @@ namespace web_shop.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index(string? homeSearch, int orderBy = 0)
+        public IActionResult Index(string? homeSearch, int orderBy = 0, int? categoryId = 0)
         {            
             List<Product> products = _dbContext.Products.ToList();
+
+            if(categoryId > 0)
+            {
+                products = products.Where(p => _dbContext.ProductCategories.Where(pc => pc.CategoryId == categoryId).Select(pc => pc.ProductId).ToList().Contains(p.Id)).ToList();
+            }
 
             // ako parametar "homeSearch" nije prazan, filtriraj proizvode (po naslovu)
             if (!string.IsNullOrWhiteSpace(homeSearch))
@@ -35,6 +40,9 @@ namespace web_shop.Controllers
                 case 3: products = products.OrderBy(a => a.Price).ToList(); break;
                 case 4: products = products.OrderByDescending(a => a.Price).ToList(); break;
             }
+
+            // Lista kategorija
+            ViewBag.CategoriesVB = _dbContext.Categories.ToList();
 
             return View(products);
         }
