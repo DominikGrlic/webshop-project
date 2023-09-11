@@ -60,6 +60,15 @@
                 <h5 class="card-title">@item.Title</h5>
                 <p class="card-text">@item.Description</p>
                 <p class="card-text">@item.Price.ToString("C2")</p>
+                <p>
+                    <form method="POST" asp-area="" asp-controller="Cart" asp-action="AddToCart">
+                        <input type="hidden" name="productId" value="@item.Id"/>
+                        <input type="number" name="quantity" class="form-control" min="1.00" max="@item.InStock"/>
+                        <button type="submit" class="btn btn-success">
+                            Add to cart
+                        </button> 
+                    </form>
+                </p>
             </div>
         </div>
     }
