@@ -1,0 +1,101 @@
+﻿@model List<web_shop.Services.Cart.CartItem>
+
+<h1>Fill in empty inputs and finish your order</h1>
+<hr />
+
+@if(!String.IsNullOrEmpty(ViewBag.CheckoutMsg))
+{
+    <div class="col-12">
+        <p class="alert alert-danger">
+            @Html.Raw(ViewBag.CheckoutMsg)
+        </p>
+    </div>
+}
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td></td>
+                        <td>@item.Product.Title</td>
+                        <td>@item.Product.Price.ToString("C2")</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.GetTotal().ToString("C2")</td>
+                    </tr>
+                }
+                <tr>
+                    <td>
+                        Total cost: @Model.Sum(m => m.GetTotal()).ToString("C2");
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<h4>Personal information </h4>
+<form class="row" method="post"asp-controller="Order" asp-action="CreateOrder">
+    <div class="col-md-6 mb-3">
+        <label>First name *</label>
+        <input type="text" name="firstName" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Last name *</label>
+        <input type="text" name="lastName" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Email address *</label>
+        <input type="text" name="emailAddress" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Phone number *</label>
+        <input type="text" name="phoneNumber" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Address *</label>
+        <input type="text" name="address" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>City *</label>
+        <input type="text" name="city" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Country *</label>
+        <select name="Country" class="form-select">
+            <option value="">-- Select country --</option>
+            <option value="Croatia">Croatia</option>
+            <option value="Serbia">Serbia</option>
+            <option value="Slovenia">Slovenia</option>
+            <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+        </select>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Postal code *</label>
+        <input type="text" name="postalCode" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Message</label>
+        <textarea class="form-control" rows="5" name="message"></textarea>
+    </div>
+
+    <div class="col-md-12">
+        <a class="btn btn-warning" asp-area="" asp-controller="Home" asp-action="Index">Continue shopping</a>
+        <button class="btn btn-success" type="submit">
+            Finish order
+        </button>
+    </div>
+</form>
+
+

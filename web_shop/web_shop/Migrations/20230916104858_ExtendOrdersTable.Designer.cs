@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web_shop.Data;
 
@@ -11,9 +12,10 @@ using web_shop.Data;
 namespace web_shop.Migrations
 {
     [DbContext(typeof(AppDbContex))]
-    partial class AppDbContexModelSnapshot : ModelSnapshot
+    [Migration("20230916104858_ExtendOrdersTable")]
+    partial class ExtendOrdersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,14 +54,14 @@ namespace web_shop.Migrations
                         new
                         {
                             Id = "cd0fc0a4-46a0-406d-b164-216473011946",
-                            ConcurrencyStamp = "73226c36-ec6b-4c2c-bc12-392deae06f75",
+                            ConcurrencyStamp = "8acb0f3d-a880-49ea-a818-f26a0f758767",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "7c2cc1ae-5d07-4adb-ba15-719725a5ca16",
-                            ConcurrencyStamp = "a55f5303-0b58-41d5-a3ba-9407308a44be",
+                            ConcurrencyStamp = "4b558d0b-a376-41ed-b32c-99ecdcb9e908",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -267,7 +269,7 @@ namespace web_shop.Migrations
                             Id = "2846d2b2-81d9-4918-839d-b70acbf93ef2",
                             AccessFailedCount = 0,
                             Address = "Duga Uvala 302",
-                            ConcurrencyStamp = "2681eb13-ae95-4ab6-84c7-f8a09cfdbf7f",
+                            ConcurrencyStamp = "4a953f5a-03e6-4a34-a1fd-ed1d15b091e1",
                             Email = "admin@admin.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -275,9 +277,9 @@ namespace web_shop.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEMz+Bu3Sz3RV5SqOBJOHny9elNLVViohkco8lFHy74JRTRLChzVn/jbVfhtV4GWSfg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJCrDCUwaSExsk7uDyMtv8cUHNqjVnR4nf3tXKtMvv0e6QZi1URYKfE7v3vWsX2CMg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5448b16a-75eb-4d7c-8803-68f98b8f83d0",
+                            SecurityStamp = "02a0a118-12b1-42f0-ade1-5a038968db57",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
@@ -398,6 +400,7 @@ namespace web_shop.Migrations
                         .HasColumnType("decimal(9,2)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -630,7 +633,9 @@ namespace web_shop.Migrations
                 {
                     b.HasOne("web_shop.Areas.Identity.Data.AppUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

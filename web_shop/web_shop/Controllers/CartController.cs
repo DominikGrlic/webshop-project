@@ -48,6 +48,7 @@ namespace web_shop.Controllers
             // 2.Provjeri sesiju
             List<CartItem> cart = HttpContext.Session.GetObjectFromJson(sessionCartKey);
 
+            //-- Kosarica je prazna ---> kreiraj objekt klase CartItem i popuni ga s podacima, dodaj u kolekciju, pa spremi sve u sesiju
             // 3. Uvjeti koristenja kosarice
             if(cart.Count == 0)
             {
@@ -71,6 +72,28 @@ namespace web_shop.Controllers
             }
             else
             {
+                //-- Ako proizvod nije u kosarici, kreiraj novi objek klase CartItem, ako je u kosarici samo azuriraj kolicinu
+                var updateOrCreateItem = cart.Find(p => p.Product.Id == productId) ?? new CartItem();
+
+                if(quantity + updateOrCreateItem.Quantity > findProduct.InStock)
+                {
+                    TempData["CartMsg"] = $"Nije moguce dodati odabranu kolicinu proizvoda. Na zalihama je dostupno {findProduct.InStock}";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if(updateOrCreateItem.Quantity == 0)
+                {
+                    updateOrCreateItem.Product = findProduct;
+                    updateOrCreateItem.Quantity = quantity;
+                    cart.Add(updateOrCreateItem);
+                }
+                else
+                {
+                    updateOrCreateItem.Quantity += quantity;
+                }
+
+                //-- Azuriraj sesiju
+                HttpContext.Session.SetObjectAsJason(sessionCartKey, cart);
 
             }
 
@@ -79,7 +102,18 @@ namespace web_shop.Controllers
         }
 
 
-        // TODO: RemoveFromCart (int productId)
+        //-- akcija za brisanje stavki iz kosarice
+        public IActionResult RemoveFromCart (int productId)
+        {
+            List<CartItem> cart = HttpContext.Session.GetObjectFromJson(sessionCartKey);
+
+            cart.RemoveAll(p => p.Product.Id == productId);
+            TempData["CartMsg"] = $"Items removed from cart!";
+
+            HttpContext.Session.SetObjectAsJason(sessionCartKey, cart);
+
+            return RedirectToAction(nameof(Index));
+        }
 
         // GET: TestSession()
         public IActionResult TestSession()

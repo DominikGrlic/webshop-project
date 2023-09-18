@@ -19,7 +19,6 @@
         }
         else
         {
-            @*TODO: Dizajn za prikaz proizvoda u kosarici*@
             <table class="table">
                 <thead>
                     <tr>
@@ -34,16 +33,23 @@
                     @foreach(var item in Model)
                     {
                         <tr>
-                            <td>@*Dugme za uklanjanje iz kosarice*@</td>
+                            <td><a class="btn btn-danger" asp-controller="Cart" asp-action="RemoveFromCart" asp-route-productId="@item.Product.Id">Remove item</a></td>
                             <td>@item.Product.Title</td>
                             <td>@item.Product.Price.ToString("C2")</td>
                             <td>@item.Quantity</td>
                             <td>@item.GetTotal().ToString("C2")</td>
                         </tr>
+                        
                     }
+                    <tr>
+                        <td>
+                            Total cost: @Model.Sum(m => m.GetTotal()).ToString("C2");
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
+            <a class="btn btn-success" asp-controller="Order" asp-action="Checkout">Checkout</a>
         }
     </div>
 </div>
