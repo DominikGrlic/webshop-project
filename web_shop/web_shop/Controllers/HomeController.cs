@@ -6,7 +6,7 @@ using web_shop.Models;
 
 namespace web_shop.Controllers
 {
-    [Authorize] // primjenjuje se na cijeli kontroler ili na akcije unutar kontrolera
+    //-- [Authorize] <--- primjenjuje se na cijeli kontroler ili na akcije unutar kontrolera
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -43,6 +43,7 @@ namespace web_shop.Controllers
 
             // Lista kategorija
             ViewBag.CategoriesVB = _dbContext.Categories.ToList();
+            ViewBag.ThanksMsg = TempData["ThanksMsg"] as string;
 
             return View(products);
         }

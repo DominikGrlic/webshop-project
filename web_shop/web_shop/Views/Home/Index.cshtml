@@ -13,6 +13,15 @@
 
 <hr />
 
+@if(!string.IsNullOrEmpty(ViewBag.ThanksMsg))
+{
+    <div class="col-12">
+        <p class="alert alert-success text-center">
+            @ViewBag.ThanksMsg
+        </p>
+    </div>
+}
+
 <p>@Context.Session.GetString("sessionString")</p>
 
 <form method="get" asp-area="" asp-controller="Home" asp-action="Index" class="row mb-5">
