@@ -1,2 +1,2 @@
-# ponavljanje_webShop
-ponavljanje gradiva ASP.NET sa Algebra predavanja (autorzacija, autentifikacija, sesije, kosarica)
+# webshop projekt
+izrada web shop projekta sa kosaricom i racunom te potrebnim unosom podataka za dostavu
